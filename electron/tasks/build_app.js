@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const less = require('gulp-less');
 const watch = require('gulp-watch');
 const batch = require('gulp-batch');
-const copy = require('gulp-copy');
 const plumber = require('gulp-plumber');
 const jetpack = require('fs-jetpack');
 const bundle = require('./bundle');
@@ -12,10 +11,9 @@ const projectDir = jetpack;
 const srcDir = jetpack.cwd('./src');
 const destDir = jetpack.cwd('./app');
 
-gulp.task('copy', () => {
-  return gulp.src(['node_modules/bootstrap/dist/css/bootstrap.min.css'])
-             .pipe(copy('css'))
-             .pipe(gulp.dest(destDir.path('css')));
+gulp.task('copy', function () {
+    gulp.src('./node_modules/bootstrap/dist/css/bootstrap.min.css')
+        .pipe(gulp.dest('./app/css'));
 });
 
 gulp.task('bundle', () => {
