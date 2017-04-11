@@ -4,6 +4,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var electron = require('electron');
 var jetpack = _interopDefault(require('fs-jetpack'));
+var serialport = _interopDefault(require('serialport'));
 var $ = _interopDefault(require('jquery'));
 
 // This gives you default context menu (cut, copy, paste)
@@ -138,6 +139,21 @@ document.querySelector('#os').innerHTML = osMap[process.platform];
 document.querySelector('#author').innerHTML = manifest.author;
 document.querySelector('#env').innerHTML = env.name;
 document.querySelector('#electron-version').innerHTML = process.versions.electron;
+
+serialport.list((err, ports) => {
+  console.log('ports', ports);
+  if (err) {
+    document.getElementById('error').textContent = err.message;
+    return
+  } else {
+    document.getElementById('error').textContent = '';
+  }
+
+  if (ports.length === 0) {
+    document.getElementById('error').textContent = 'No ports discovered';
+  }
+  //ports.forEach(port => table.write(port))
+});
 
 }());
 //# sourceMappingURL=app.js.map

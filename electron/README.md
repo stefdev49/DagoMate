@@ -1,6 +1,6 @@
 # DagoMatelectron
 
-An app to pilot a Discoeasy 200 over USB serail port.
+An app to pilot a Discoeasy 200 over USB serial port.
 
 # Structure of the project
 The application is split between two main folders...

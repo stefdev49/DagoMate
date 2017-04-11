@@ -10,6 +10,8 @@ import jetpack from 'fs-jetpack';
 import { greet } from './hello_world/hello_world';
 import env from './env';
 
+import serialport from 'serialport'
+
 // Importing jQuery in ES6 style
 import $ from "jquery";
 
@@ -38,3 +40,18 @@ document.querySelector('#os').innerHTML = osMap[process.platform];
 document.querySelector('#author').innerHTML = manifest.author;
 document.querySelector('#env').innerHTML = env.name;
 document.querySelector('#electron-version').innerHTML = process.versions.electron;
+
+serialport.list((err, ports) => {
+  console.log('ports', ports);
+  if (err) {
+    document.getElementById('error').textContent = err.message
+    return
+  } else {
+    document.getElementById('error').textContent = ''
+  }
+
+  if (ports.length === 0) {
+    document.getElementById('error').textContent = 'No ports discovered'
+  }
+  //ports.forEach(port => table.write(port))
+})
