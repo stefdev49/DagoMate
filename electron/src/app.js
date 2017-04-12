@@ -44,14 +44,22 @@ document.querySelector('#electron-version').innerHTML = process.versions.electro
 serialport.list((err, ports) => {
   console.log('ports', ports);
   if (err) {
-    document.getElementById('error').textContent = err.message
+    $('#portslisterror').removeClass('hidden')
+    $('#portslisterror').text(err.message)
     return
   } else {
-    document.getElementById('error').textContent = ''
+    $('#portslisterror').addClass('hidden')
+    ports.forEach(port => $('#portslist').append('<li class="list-group-item">' + port.comName + '</li>'))
   }
-
+  /**
+  comName : "/dev/ttyUSB0"
+  manufacturer : "FTDI"
+  pnpId : "usb-FTDI_FT232R_USB_UART_A105W3PW-if00-port0"
+  productId : "0x6001"
+  serialNumber : "FTDI_FT232R_USB_UART_A105W3PW"
+  vendorId : "0x0403"
+  */
   if (ports.length === 0) {
     document.getElementById('error').textContent = 'No ports discovered'
   }
-  //ports.forEach(port => table.write(port))
 })
