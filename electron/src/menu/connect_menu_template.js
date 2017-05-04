@@ -1,25 +1,33 @@
 import { app, BrowserWindow } from 'electron';
+import { listPorts } from '../serialport/services';
 
-export const connMenuTemplate = {
+/**
+ * Updates the menu with available serial ports
+ */
+function updatePortList () {
+  listPorts();
+}
+
+export var connMenuTemplate = {
   label: 'Serial port',
   submenu: [{
     label: 'Select port',
-    accelerator: 'CmdOrCtrl+R',
+    accelerator: 'Alt+L',
     click: () => {
-      BrowserWindow.getFocusedWindow().webContents.reloadIgnoringCache();
+      updatePortList();
     },
   },
   { type: 'separator' },
   {
     label: 'Connect',
-    accelerator: 'Alt+CmdOrCtrl+C',
+    accelerator: 'Alt+C',
     click: () => {
       BrowserWindow.getFocusedWindow().toggleDevTools();
     },
   },
   {
     label: 'Disconnect',
-    accelerator: 'CmdOrCtrl+D',
+    accelerator: 'Alt+D',
     click: () => {
       app.quit();
     },
