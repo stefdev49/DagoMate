@@ -1,1 +1,3 @@
 app/css/bootstrap.min.css
+app/**/*.map
+app/*.map

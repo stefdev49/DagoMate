@@ -14,6 +14,3 @@ Everything is completly experimental, it is a WIP.
 
 ## electron
 DagoMate application based on electron
-
-## dagoserver
-serves UBS serial over a websocket.
