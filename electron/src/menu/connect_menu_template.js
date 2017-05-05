@@ -5,17 +5,30 @@ import { listPorts } from '../serialport/services';
  * Updates the menu with available serial ports
  */
 function updatePortList () {
-  listPorts();
+  let ports = listPorts();
 }
 
 export var connMenuTemplate = {
   label: 'Serial port',
   submenu: [{
-    label: 'Select port',
+    label: 'Refresh list',
     accelerator: 'Alt+L',
     click: () => {
       updatePortList();
     },
+  },
+  {
+    label: 'Select',
+    submenu: [
+      {
+        label: '/dev/ttyUSB0',
+        type: 'radio'
+      },
+      {
+        label: '/dev/ttyUSB1',
+        type: 'radio'
+      }
+    ]
   },
   { type: 'separator' },
   {
