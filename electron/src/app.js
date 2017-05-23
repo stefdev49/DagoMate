@@ -10,7 +10,7 @@ import jetpack from 'fs-jetpack';
 import { greet } from './hello_world/hello_world';
 import env from './env';
 
-import serialport from 'serialport'
+import serialport from 'serialport';
 
 // Importing jQuery in ES6 style
 import $ from "jquery";

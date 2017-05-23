@@ -1,3 +1,7 @@
 export const listPorts = () => {
-  console.log('coucou!')
+  return ['/dev/ttyUSB0', '/dev/ttyUSB1', '/dev/ttyUSB2']
 };
+
+var currentPort = '/dev/ttyUSB0';
+
+export { currentPort };
