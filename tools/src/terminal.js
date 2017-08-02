@@ -15,13 +15,11 @@ args
   .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
   .option('-l --list', 'List available ports then exit')
   // TODO make the port not a flag as it's always required
-  .option('-p, --port <port>', 'Path or Name of serial port')
-  .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 9600)
+  .option('-p, --port <port>', 'Path or Name of serial port', '/dev/ttyUSB0')
+  .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 250000)
   .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
   .option('--parity <parity>', 'Parity default: none', 'none')
   .option('--stopbits <bits>', 'Stop bits default: 1', makeNumber, 1)
-  // TODO make this on by default
-  .option('--echo --localecho', 'Print characters as you type them.')
   .parse(process.argv);
 
 function listPorts() {
@@ -59,13 +57,14 @@ function createPort() {
       port.close();
       process.exit(0);
     }
-    if (args.localecho) {
-      if (s[0] === 0x0d) {
-        process.stdout.write('\n');
-      } else {
-        process.stdout.write(s);
-      }
+
+    // write to console
+    if (s[0] === 0x0d) {
+      process.stdout.write('\n');
+    } else {
+      process.stdout.write(s);
     }
+
     port.write(s);
   });
 
