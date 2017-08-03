@@ -18,3 +18,5 @@ Thumbs.db
 
 nohup.out
 logs/
+package-lock.json
+session.log
