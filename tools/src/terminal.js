@@ -4,6 +4,7 @@
 const version = require('../package.json').version;
 const SerialPort = require('serialport/lib/');
 const args = require('commander');
+const fs = require('fs');
 
 function makeNumber(input) {
   return Number(input);
@@ -20,6 +21,7 @@ args
   .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
   .option('--parity <parity>', 'Parity default: none', 'none')
   .option('--stopbits <bits>', 'Stop bits default: 1', makeNumber, 1)
+  .option('--record <filename>', 'Record session to file default: session.log', 'session.log')
   .parse(process.argv);
 
 function listPorts() {
@@ -41,6 +43,9 @@ function createPort() {
     process.exit(-1);
   }
 
+  // setup logging file
+  const recorder = fs.createWriteStream(args.record);
+
   const openOptions = {
     baudRate: args.baud,
     dataBits: args.databits,
@@ -58,11 +63,13 @@ function createPort() {
       process.exit(0);
     }
 
-    // write to console
+    // echo to console
     if (s[0] === 0x0d) {
       process.stdout.write('\n');
+      recorder.write('\n');
     } else {
       process.stdout.write(s);
+      recorder.write(s);
     }
 
     port.write(s);
@@ -70,6 +77,8 @@ function createPort() {
 
   port.on('data', (data) => {
     process.stdout.write(data.toString());
+    // record data
+    recorder.write(data.toString());
   });
 
   port.on('error', (err) => {
