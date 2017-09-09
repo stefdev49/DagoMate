@@ -13,6 +13,7 @@
   "author": "stefdev49@gmail.com",
   "license": "ISC",
   "dependencies": {
-    "serialport": "^5.0.0"
+    "serialport": "^5.0.0",
+    "terminal-kit": "^1.13.10"
   }
 }

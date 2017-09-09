@@ -5,6 +5,7 @@ const version = require('../package.json').version;
 const SerialPort = require('serialport/lib/');
 const args = require('commander');
 const fs = require('fs');
+const term = require('terminal-kit').terminal ;
 
 function makeNumber(input) {
   return Number(input);
@@ -54,9 +55,11 @@ function createPort() {
   };
 
   const port = new SerialPort(args.port, openOptions);
-
+  const prompt = 'gcode>';
   process.stdin.resume();
   process.stdin.setRawMode(true);
+
+
   process.stdin.on('data', (s) => {
     if (s[0] === 0x03) {
       port.close();
@@ -65,10 +68,10 @@ function createPort() {
 
     // echo to console
     if (s[0] === 0x0d) {
-      process.stdout.write('\n');
+      term('\n');
       recorder.write('\n');
     } else {
-      process.stdout.write(s);
+      term.green(s);
       recorder.write(s);
     }
 
@@ -76,9 +79,23 @@ function createPort() {
   });
 
   port.on('data', (data) => {
-    process.stdout.write(data.toString());
+    const ok = /ok /;
+    const fail = / fail/;
+
+    var message = data.toString();
     // record data
-    recorder.write(data.toString());
+    recorder.write(message);
+
+    // interpret message and output it to terminal
+    if(fail.test(message)) {
+      term.red(message);
+    }
+    else {
+      term(message);
+    }
+    if(ok.test(message)) {
+      term.yellow(prompt);
+    }
   });
 
   port.on('error', (err) => {
