@@ -24,33 +24,48 @@ const log = contrib.log(
         bottom: 3,
         fg: "green",
         selectedFg: "green",
-        label: 'Printer message',
-        border: {type: "line", fg: "cyan"}
+        label: 'Printer console',
+        border: {type: "line", fg: "cyan"},
+        tags: true
     });
 screen.append(log);
 
 // command input area
-const inputbox = blessed.textbox(
+const input = blessed.textbox(
   {
     height: 3,
     bottom: 0,
     fg: "green",
     selectedFg: "green",
     label: 'Command',
+    inputOnFocus: true,
     border: {type: "line", fg: "cyan"}
 });
-screen.append(inputbox);
+screen.append(input);
 
-screen.key(['C-d', 'C-c'], function(ch, key) {
+input.key(['C-d', 'C-c'], function(ch, key) {
   return process.exit(0);
+});
+
+// If box is focused, handle `Enter`.
+input.key('enter', function(ch, key) {
+    var message = this.getValue();
+    if(message === 'exit') {
+      return process.exit(0);
+    }
+    log.log(message);
+    this.clearValue();
+    screen.render();
+    this.focus();
 });
 
 var count = 0;
 screen.key(['a'], function(ch, key) {
   count++;
   log.log('une ligne ......... ' + count);
-  statusbar.setContent('count={red-fg}{green-bg}'+count+'{/}');
+  statusbar.setContent('count={red-fg}{white-bg}'+count+'{/}');
   screen.render();
 });
 
+input.focus();
 screen.render()
