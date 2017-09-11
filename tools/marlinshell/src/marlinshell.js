@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 
 const version = require('../package.json').version;
 const SerialPort = require('serialport/lib/');
@@ -8,7 +9,6 @@ const fs = require('fs');
 const blessed = require('blessed');
 const contrib = require('blessed-contrib');
 const screen = blessed.screen({
-    // Example of optional settings:
     smartCSR: true,
     useBCE: true,
     cursor: {
@@ -16,8 +16,6 @@ const screen = blessed.screen({
         blink: true,
         shape: 'underline'
     },
-    log: `${__dirname}/application.log`,
-    debug: true,
     dockBorders: true
 });
 
@@ -30,6 +28,9 @@ var remain = '';
 // true if connected to a printer
 var connected = false;
 
+// true if printer is busy
+var busy = true;
+
 // argument parsing
 function makeNumber(input) {
   return Number(input);
@@ -38,8 +39,7 @@ function makeNumber(input) {
 args
   .version(version)
   .usage('-p <port> [options]')
-  .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
-  .option('-l --list', 'List available ports then exit')
+  .description('A basic shell for communicating to a 3D printer with marlin firmware over a serial port. Pressing ctrl+c or ctrl+d exits.')
   .option('-p, --port <port>', 'Path or Name of serial port', '/dev/ttyUSB0')
   .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 250000)
   .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
@@ -106,15 +106,39 @@ input.key('enter', function(ch, key) {
     recorder.write(command+'\n');
     port.write(command+'\n');
     log.log(command);
+    busy = true;
+    updateStatus();
     this.clearValue();
     screen.render();
     this.focus();
 });
 
+// display status
+function updateStatus() {
+  var statusline;
+  if(busy) {
+    statusline = '{black-fg}{yellow-bg}busy {/yellow-bg}{/black-fg}';
+  } else {
+    statusline = '{black-fg}{green-bg}ready{/green-bg}{/black-fg}';
+  }
+  if(connected) {
+    statusline += ' {black-fg}{green-bg}connected{/green-bg}{/black-fg}';
+  } else {
+    statusline += ' {black-fg}{red-bg}disconnected{/red-bg}{/black-fg}';
+  }
+  statusbar.setContent(statusline);
+  screen.render();
+}
+
+// return true when the printer is ready after this message
+function isReady(message) {
+  return /^ok /.test(message) || /^echo:SD init/.test(message);
+}
+
 // outputs multi-line message to console window
 function consoleOutput(message) {
   // split multi-line message
-  lines = message.split(/\r?\n/g);
+  var lines = message.split(/\r?\n/g);
 
   // add remainder from previous display
   lines[0] = remain + lines[0];
@@ -127,10 +151,19 @@ function consoleOutput(message) {
   }
 
   // loop to display complete lines
+  busy = true;
   lines.forEach((element) => {
-    log.log(element);
-    screen.render();
+    if(element.length>0) {
+      log.log(element);
+      if(isReady(element)) {
+        busy = false;
+      }
+      screen.render();
+    }
   });
+
+  // update status
+  updateStatus();
 }
 
 
@@ -154,8 +187,7 @@ function createPort() {
   // open port event handler
   port.on('open', (data) => {
     connected = true;
-    statusbar.setContent('{right}{black-fg}{green-bg}connected{/green-bg}{/black-fg}{/right}');
-    screen.render();
+    updateStatus();
   });
 
   // data ready event
