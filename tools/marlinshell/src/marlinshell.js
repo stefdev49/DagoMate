@@ -21,6 +21,9 @@ const screen = blessed.screen({
     dockBorders: true
 });
 
+// serail port
+var port;
+
 // remainder of last printer's message
 var remain = '';
 
@@ -100,6 +103,8 @@ input.key('enter', function(ch, key) {
     if(command === 'exit') {
       return process.exit(0);
     }
+    recorder.write(command+'\n');
+    port.write(command+'\n');
     log.log(command);
     this.clearValue();
     screen.render();
@@ -144,7 +149,7 @@ function createPort() {
     stopBits: args.stopbits
   };
 
-  const port = new SerialPort(args.port, openOptions);
+  port = new SerialPort(args.port, openOptions);
 
   // open port event handler
   port.on('open', (data) => {
