@@ -108,14 +108,28 @@ input.key('enter', function(ch, key) {
 
 // outputs multi-line message to console window
 function consoleOutput(message) {
-  // send to console window
+  // split multi-line message
   lines = message.split(/\r?\n/g);
+
+  // add remainder from previous display
+  lines[0] = remain + lines[0];
+
+  // if last line is incomplete, keep it until next time
+  if(/\r?\n$/.test(message) == false) {
+    remain = lines.pop();
+  } else {
+    remain = '';
+  }
+
+  // loop to display complete lines
   lines.forEach((element) => {
     log.log(element);
     screen.render();
   });
 }
 
+
+// connect to printer and setup event handlers
 function createPort() {
   if (!args.port) {
     args.outputHelp();
