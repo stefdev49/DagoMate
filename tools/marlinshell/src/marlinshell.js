@@ -31,6 +31,20 @@ var connected = false;
 // true if printer is busy
 var busy = true;
 
+// hotend temperature
+var htemp = 0;
+
+// hotend temperature target
+var htarget = 0;
+
+// hotbed temperature
+var btemp = 0;
+
+// hotbed temperature target
+var btarget = 0;
+
+
+
 // argument parsing
 function makeNumber(input) {
   return Number(input);
@@ -59,8 +73,8 @@ const statusbar = blessed.box(
   {
     height: 1,
     top: 0,
-    fg: 'green',
-    selectedFg: 'green',
+    fg: 'black',
+    bg: 'white',
     tags: true
 });
 screen.append(statusbar);
@@ -70,8 +84,9 @@ const log = contrib.log(
       {
         top: 1,
         bottom: 3,
-        fg: 'green',
-        selectedFg: 'green',
+        lines: 60,
+        fg: 'white',
+        selectedFg: 'white',
         label: 'Printer console',
         border: {type: 'line', fg: 'cyan'},
         tags: true
@@ -105,7 +120,7 @@ input.key('enter', function(ch, key) {
     }
     recorder.write(command+'\n');
     port.write(command+'\n');
-    log.log(command);
+    log.log('{green-fg}'+command+'{/green-fg}');
     busy = true;
     updateStatus();
     this.clearValue();
@@ -116,11 +131,18 @@ input.key('enter', function(ch, key) {
 // display status
 function updateStatus() {
   var statusline;
+
+  // marlin status
   if(busy) {
     statusline = '{black-fg}{yellow-bg}busy {/yellow-bg}{/black-fg}';
   } else {
     statusline = '{black-fg}{green-bg}ready{/green-bg}{/black-fg}';
   }
+
+  // temperature report
+  statusline += ' Hotend:'+htemp+'/'+htarget+'°C  Hotbed:'+htemp+'/'+htarget+'°C  ';
+
+  // connection status
   if(connected) {
     statusline += ' {black-fg}{green-bg}connected{/green-bg}{/black-fg}';
   } else {
@@ -132,7 +154,12 @@ function updateStatus() {
 
 // return true when the printer is ready after this message
 function isReady(message) {
-  return /^ok /.test(message) || /^echo:SD init/.test(message);
+  return /^ok /.test(message) || /^echo:SD init/.test(message) || /Unknown/.test(message) || /Invalid/.test(message);
+}
+
+// return true if the message is an error message
+function isError(message) {
+  return /Home XYZ first/.test(message) || /fail/.test(message);
 }
 
 // outputs multi-line message to console window
@@ -154,7 +181,19 @@ function consoleOutput(message) {
   busy = true;
   lines.forEach((element) => {
     if(element.length>0) {
-      log.log(element);
+      // detect temperature report
+      if(/ok T:/.test(element)) {
+        var temps = element.split(/[: /]/);
+        htemp=temps[2];
+        htarget=temps[4];
+        btemp=temps[6];
+        btarget=temps[8];
+      }
+      if(isError(element)) {
+        log.log('{red-fg}'+element+'{/red-fg}');
+      } else {
+        log.log(element);
+      }
       if(isReady(element)) {
         busy = false;
       }
