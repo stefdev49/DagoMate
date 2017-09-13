@@ -7,7 +7,6 @@ const args = require('commander');
 const fs = require('fs');
 
 const blessed = require('blessed');
-const contrib = require('blessed-contrib');
 const screen = blessed.screen({
     smartCSR: true,
     useBCE: true,
