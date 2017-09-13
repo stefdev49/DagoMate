@@ -43,7 +43,11 @@ var btemp = 0;
 // hotbed temperature target
 var btarget = 0;
 
+// index in command history
+var hindex = 0;
 
+// command history
+var history = [];
 
 // argument parsing
 function makeNumber(input) {
@@ -83,12 +87,16 @@ screen.append(statusbar);
 const log = contrib.log(
       {
         top: 1,
-        bottom: 3,
+        bottom: 2,
         lines: 60,
         fg: 'white',
         selectedFg: 'white',
         label: 'Printer console',
         border: {type: 'line', fg: 'cyan'},
+        scrollable: true,
+        scrollbar: {
+          bg: 'blue'
+        },
         tags: true
     });
 screen.append(log);
@@ -112,18 +120,32 @@ input.key(['C-d', 'C-c'], function(ch, key) {
   return process.exit(0);
 });
 
+// command history handling
+input.key(['up', 'down'], function(ch, key) {
+  if(hindex > 0 && key.name === 'up') {
+    hindex--;
+  }
+  if(hindex < history.length-1 && key.name === 'down') {
+    hindex++;
+  }
+  this.setValue(history[hindex]);
+  screen.render();
+  this.focus();
+});
+
 // if box is focused, handle `Enter`.
 input.key('enter', function(ch, key) {
     var command = this.getValue();
     if(command === 'exit') {
       return process.exit(0);
     }
+    hindex = history.push(command);
     recorder.write(command+'\n');
     port.write(command+'\n');
     log.log('{green-fg}'+command+'{/green-fg}');
+    this.clearValue();
     busy = true;
     updateStatus();
-    this.clearValue();
     screen.render();
     this.focus();
 });
