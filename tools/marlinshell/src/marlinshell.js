@@ -84,11 +84,10 @@ const statusbar = blessed.box(
 screen.append(statusbar);
 
 // message display area
-const log = contrib.log(
+const log = blessed.log(
       {
         top: 1,
         bottom: 2,
-        lines: 60,
         fg: 'white',
         selectedFg: 'white',
         label: 'Printer console',
@@ -97,6 +96,7 @@ const log = contrib.log(
         scrollbar: {
           bg: 'blue'
         },
+        mouse: true,
         tags: true
     });
 screen.append(log);
