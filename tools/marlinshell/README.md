@@ -8,3 +8,20 @@ All command sent and the messages received back from the printer are logged in a
 Run it with the `--help` to get all command line options.
 
 By default `marlinshell` connects to /dev/ttyUSB0 at 2500000 bauds, and records to the `session.log` file.
+
+## Build
+You can build either with `npm` or `yarn`:
+```shell
+yarn install
+```
+
+## Run
+To run marlinshell you just have to run :
+```shell
+src/marlinshell.js
+```
+
+If you want to change the default logging file :
+```shell
+src/marlinshell.js -o calibration.log
+```
