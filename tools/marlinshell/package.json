@@ -1,6 +1,6 @@
 {
   "name": "marlinshell",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "command shell for marlin firmware",
   "main": "index.js",
   "repository": "https://github.com/stefdev49/DagoMate",
@@ -8,7 +8,6 @@
   "license": "MIT",
   "dependencies": {
     "blessed": "^0.1.81",
-    "blessed-contrib": "^4.8.5",
     "commander": "^2.11.0",
     "fs": "^0.0.1-security",
     "serialport": "^5.0.0"

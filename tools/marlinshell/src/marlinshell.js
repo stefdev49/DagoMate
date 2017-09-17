@@ -161,7 +161,7 @@ function updateStatus() {
   }
 
   // temperature report
-  statusline += ' Hotend:'+htemp+'/'+htarget+'°C  Hotbed:'+htemp+'/'+htarget+'°C  ';
+  statusline += ' Hotend:'+htemp+'/'+htarget+'°C  Hotbed:'+btemp+'/'+btarget+'°C  ';
 
   // connection status
   if(connected) {
