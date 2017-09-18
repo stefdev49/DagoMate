@@ -11,5 +11,12 @@
     "commander": "^2.11.0",
     "fs": "^0.0.1-security",
     "serialport": "^5.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^3.5.3"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
