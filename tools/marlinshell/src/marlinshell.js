@@ -202,15 +202,14 @@ function consoleOutput(message) {
   busy = true;
   lines.forEach((element) => {
     if(element.length>0) {
-      // detect temperature report
-      if(/ok T:/.test(element)) {
+      // detect temperature report and hide it from console messages
+      if(/ok T:/.test(element) || /^ T:/.test(element)) {
         var temps = element.split(/[: /]/);
         htemp=temps[2];
         htarget=temps[4];
         btemp=temps[6];
         btarget=temps[8];
-      }
-      if(isError(element)) {
+      } else if(isError(element)) {
         log.log('{red-fg}'+element+'{/red-fg}');
       } else {
         log.log(element);
