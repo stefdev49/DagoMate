@@ -25,3 +25,11 @@ If you want to change the default logging file :
 ```shell
 src/marlinshell.js -o calibration.log
 ```
+
+## Development
+
+### Coverage
+Test coverage is done with `istanbul`.
+```
+yarn add --dev nyc
+```
