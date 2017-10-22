@@ -20,3 +20,4 @@ nohup.out
 logs/
 package-lock.json
 session.log
+.tern-project
