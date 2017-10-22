@@ -3,7 +3,7 @@
  * gui module resposible for building and updating the gui
  * Constructor pattern
  */
-function Gui(port, recorder, state) {
+function Gui(_port, _recorder, _state) {
 
 const blessed = require('blessed');
 const screen = blessed.screen({
@@ -19,20 +19,16 @@ const screen = blessed.screen({
 
 
 // serial port to 3D printer
-var port = port;
+var port = _port;
 
 // I/O logging facility
-var recorder = recorder;
+var recorder = _recorder;
 
 // true when the USB serial is connected to a printer
-var connected = state;
+var connected = _state;
 
 // remainder of last printer's message
 var remain = '';
-
-this.port = port;
-this.recorder = recorder;
-this.connected = state;
 
 // true if printer is busy
 var busy = true;
@@ -102,7 +98,7 @@ screen.append(input);
 
 // global exit
 input.key(['C-d', 'C-c'], function(ch, key) {
-  this.recorder.close();
+  recorder.close();
   return process.exit(0);
 });
 
@@ -159,7 +155,6 @@ function computeStatusLine () {
 
   return statusline;
 }
-this.computeStatusLine = computeStatusLine;
 
 // display status
 function updateStatus () {
@@ -167,21 +162,18 @@ function updateStatus () {
   screen.render();
 }
 
-// make it public
-this.updateStatus = updateStatus;
-
 // return true when the printer is ready after this message
-this.isReady = function (message) {
+function isReady(message) {
   return /^ok /.test(message) || /^echo:SD init/.test(message) || /Unknown/.test(message) || /Invalid/.test(message);
 }
 
 // return true if the message is an error message
-this.isError = function (message) {
+function isError(message) {
   return /Home XYZ first/.test(message) || /fail/.test(message);
 }
 
 // outputs multi-line message to console window
-this.consoleOutput = function (message) {
+function consoleOutput(message) {
   // split multi-line message
   var lines = message.split(/\r?\n/g);
 
@@ -206,12 +198,12 @@ this.consoleOutput = function (message) {
         htarget=temps[4];
         btemp=temps[6];
         btarget=temps[8];
-      } else if(this.isError(element)) {
+      } else if(isError(element)) {
         log.log('{red-fg}'+element+'{/red-fg}');
       } else {
         log.log(element);
       }
-      if(this.isReady(element)) {
+      if(isReady(element)) {
         busy = false;
       }
       screen.render();
@@ -219,16 +211,29 @@ this.consoleOutput = function (message) {
   });
 
   // update status
-  this.updateStatus();
+  updateStatus();
 }
 
 /**
  * starts gui
  */
-this.start = function () {
+function start() {
   input.focus();
   screen.render();
 };
+
+function getConnected() {
+  return connected;
+}
+
+// export these functions
+this.computeStatusLine = computeStatusLine;
+this.consoleOutput = consoleOutput;
+this.updateStatus = updateStatus;
+this.isReady = isReady;
+this.isError = isError;
+this.start = start;
+this.getConnected = getConnected;
 
 }
 
