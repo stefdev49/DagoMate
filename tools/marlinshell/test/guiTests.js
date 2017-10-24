@@ -11,6 +11,7 @@ describe('Gui module checks', function() {
       var gui = new Gui('port', 'recorder', true);
       assert.exists(gui, 'Gui instance');
       assert.isTrue(gui.getConnected(), 'Connected');
+      gui.destroy();
     });
   });
 
@@ -19,11 +20,13 @@ describe('Gui module checks', function() {
       var gui = new Gui('port', 'recorder', true);
       assert.isTrue(gui.getConnected(), 'connected is true');
       assert.match(gui.computeStatusLine(), /{green-bg}connected/, 'status line');
+      gui.destroy();
     });
     it('shouldn\'t be connected', function() {
       var gui = new Gui('port', 'recorder', false);
       assert.isFalse(gui.getConnected(), 'connected is false');
       assert.match(gui['computeStatusLine'](), /{red-bg}disconnected/, 'status line');
+      gui.destroy();
     });
   });
 

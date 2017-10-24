@@ -17,7 +17,6 @@ const screen = blessed.screen({
     dockBorders: true
 });
 
-
 // serial port to 3D printer
 var port = _port;
 
@@ -51,8 +50,6 @@ var hindex = 0;
 // command history
 var history = [];
 
-// build ui
-screen.title = 'Marlin shell';
 
 // status line
 const statusbar = blessed.box(
@@ -63,7 +60,6 @@ const statusbar = blessed.box(
     bg: 'white',
     tags: true
 });
-screen.append(statusbar);
 
 // message display area
 const log = blessed.log(
@@ -81,7 +77,6 @@ const log = blessed.log(
         mouse: true,
         tags: true
     });
-screen.append(log);
 
 // command input area
 const input = blessed.textbox(
@@ -94,7 +89,6 @@ const input = blessed.textbox(
     inputOnFocus: true,
     border: {type: 'line', fg: 'cyan'}
 });
-screen.append(input);
 
 // global exit
 input.key(['C-d', 'C-c'], function(ch, key) {
@@ -132,6 +126,19 @@ input.key('enter', function(ch, key) {
     screen.render();
     this.focus();
 });
+
+/**
+ * starts gui
+ */
+function start() {
+  // build ui
+  screen.title = 'Marlin shell';
+  screen.append(statusbar);
+  screen.append(log);
+  screen.append(input);
+  input.focus();
+  screen.render();
+};
 
 function computeStatusLine () {
   var statusline;
@@ -214,13 +221,9 @@ function consoleOutput(message) {
   updateStatus();
 }
 
-/**
- * starts gui
- */
-function start() {
-  input.focus();
-  screen.render();
-};
+function destroy() {
+  screen.destroy();
+}
 
 function getConnected() {
   return connected;
@@ -233,6 +236,7 @@ this.updateStatus = updateStatus;
 this.isReady = isReady;
 this.isError = isError;
 this.start = start;
+this.destroy = destroy;
 this.getConnected = getConnected;
 
 }
