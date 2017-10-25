@@ -121,7 +121,7 @@ input.key('enter', function(ch, key) {
     port.write(command+'\n');
     log.log('{green-fg}'+command+'{/green-fg}');
     this.clearValue();
-    busy = true;
+    setBusy(true);
     updateStatus();
     screen.render();
     this.focus();
@@ -144,7 +144,7 @@ function computeStatusLine () {
   var statusline;
 
   // marlin status
-  if(busy == true) {
+  if(isBusy()) {
     statusline = '{black-fg}{yellow-bg}busy {/yellow-bg}{/black-fg}';
   } else {
     statusline = '{black-fg}{green-bg}ready{/green-bg}{/black-fg}';
@@ -154,7 +154,7 @@ function computeStatusLine () {
   statusline += ' Hotend:'+htemp+'/'+htarget+'°C  Hotbed:'+btemp+'/'+btarget+'°C  ';
 
   // connection status
-  if(connected == true) {
+  if(isConnected()) {
     statusline += ' {black-fg}{green-bg}connected{/green-bg}{/black-fg}';
   } else {
     statusline += ' {black-fg}{red-bg}disconnected{/red-bg}{/black-fg}';
@@ -195,7 +195,7 @@ function consoleOutput(message) {
   }
 
   // loop to display complete lines
-  busy = true;
+  setBusy(true);
   lines.forEach((element) => {
     if(element.length>0) {
       // detect temperature report and hide it from console messages
@@ -211,7 +211,7 @@ function consoleOutput(message) {
         log.log(element);
       }
       if(isReady(element)) {
-        busy = false;
+        setBusy(false);
       }
       screen.render();
     }
@@ -225,8 +225,16 @@ function destroy() {
   screen.destroy();
 }
 
-function getConnected() {
+function isConnected() {
   return connected;
+}
+
+function setBusy(value) {
+  busy = value;
+}
+
+function isBusy() {
+  return busy;
 }
 
 // export these functions
@@ -237,7 +245,9 @@ this.isReady = isReady;
 this.isError = isError;
 this.start = start;
 this.destroy = destroy;
-this.getConnected = getConnected;
+this.isConnected = isConnected;
+this.setBusy = setBusy;
+this.isBusy = isBusy;
 
 }
 
