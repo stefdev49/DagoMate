@@ -62,7 +62,7 @@ const statusbar = blessed.box(
 });
 
 // message display area
-const log = blessed.log(
+var log = blessed.log(
       {
         top: 1,
         bottom: 2,
@@ -237,6 +237,14 @@ function isBusy() {
   return busy;
 }
 
+function setLogConsole(logConsole) {
+  log = logConsole;
+}
+
+function getLogConsole() {
+  return log;
+}
+
 // export these functions
 this.computeStatusLine = computeStatusLine;
 this.consoleOutput = consoleOutput;
@@ -248,7 +256,9 @@ this.destroy = destroy;
 this.isConnected = isConnected;
 this.setBusy = setBusy;
 this.isBusy = isBusy;
-
+// for tests
+this.getLogConsole = getLogConsole;
+this.setLogConsole = setLogConsole;
 }
 
 module.exports = Gui;
